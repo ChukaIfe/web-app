@@ -26,7 +26,7 @@ pipeline{
     }
     stage("5.DeploytoUAT"){
       steps{
-        deploy adapters: [tomcat9(credentialsId: 'tomcat-cred', path: '', url: 'http://172.31.19.63:7000/')], contextPath: 'flute-app', war: 'target/*.war'
+        deploy adapters: [tomcat9(credentialsId: 'tomcat-cred', path: '', url: 'http://172.31.19.63:7000/')], contextPath: 'pines-app', war: 'target/*.war'
       }
     }
     stage("6.Qualitygate"){
@@ -38,7 +38,7 @@ pipeline{
     }
     stage("7.DeploytoPROD"){
       steps{
-        deploy adapters: [tomcat9(credentialsId: 'tomcat-cred', path: '', url: 'http://172.31.19.63:7000/')], contextPath: 'flute-app', war: 'target/*.war'
+        deploy adapters: [tomcat9(credentialsId: 'tomcat-cred', path: '', url: 'http://172.31.19.63:7000/')], contextPath: 'pines-app', war: 'target/*.war'
       }
     }
     stage("8.EmailNotification"){
