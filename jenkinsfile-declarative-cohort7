@@ -1,0 +1,50 @@
+pipeline{
+  agent {label "node_1"}
+  tools{
+    maven "Maven3.8.4"
+  }
+    stages{
+    stage("1.CodeClone"){
+      steps{
+        git 'https://github.com/ChukaIfe/web-app.git'
+      }
+    }
+    stage("2.Build App"){
+      steps{
+        sh "mvn clean package"
+      }
+    }
+    stage("3.Code Quality"){
+      steps{
+        sh "mvn sonar:sonar"
+      }
+    }
+    stage("4.Artifactory"){
+      steps{
+        sh "mvn deploy"
+      }
+    }
+    stage("5.DeploytoUAT"){
+      steps{
+        deploy adapters: [tomcat9(credentialsId: 'tomcat-cred', path: '', url: 'http://172.31.19.63:7000/')], contextPath: 'flute-app', war: 'target/*.war'
+      }
+    }
+    stage("6.Qualitygate"){
+      steps{
+        timeout(time:5, unit:'DAYS'){
+          input message: "Approval for Production"
+        }
+      }
+    }
+    stage("7.DeploytoPROD"){
+      steps{
+        deploy adapters: [tomcat9(credentialsId: 'tomcat-cred', path: '', url: 'http://172.31.19.63:7000/')], contextPath: 'flute-app', war: 'target/*.war'
+      }
+    }
+    stage("8.EmailNotification"){
+        steps{
+        emailext body: 'Build success!', subject: 'Project Status-Flute-app', to: 'chuksife@gmail.com' 
+        }
+    }
+  }
+  }
